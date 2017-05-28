@@ -1,0 +1,25 @@
+machines:
+    total: 4
+    master:
+        FQDN: ''
+        IP:
+        USER: ''
+        PASS: '
+    node1:
+        FQDN: ''
+        IP:
+        USER: ''
+        PASS: ''
+    node2:
+        FQDN: ''
+        IP:
+        USER: ''
+        PASS: ''
+    node3:
+        FQDN: ''
+        IP:
+        USER: ''
+        PASS: ''
+creds:
+    qe_pass: ''
+    pool_id: ''
