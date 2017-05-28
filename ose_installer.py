@@ -151,7 +151,6 @@ def copy_id_to_local(hostname, username, password):
     ssh.close()
     # command = 'scp root@' + hostname + ':.ssh/id_rsa.pub ' + os.getenv('HOME')
     # call(command)
-    # print(command)
 
 
 class SshCopy:

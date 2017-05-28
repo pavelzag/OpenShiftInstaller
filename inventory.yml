@@ -22,4 +22,4 @@ machines:
         PASS: ''
 creds:
     qe_pass: ''
-    pool_id: ''
+    pool_id: '1'

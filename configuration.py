@@ -16,4 +16,5 @@ def get_machine_config(machine_name):
 def get_creds():
     with open("inventory.yml", 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
+        print('nothing')
         return cfg['creds']
