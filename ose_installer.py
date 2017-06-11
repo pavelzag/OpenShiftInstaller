@@ -20,7 +20,7 @@ def main():
         nodes_ips.append(ip)
     nodes_ips.append(master_ip)
     # Passwordless commands
-    # For master:
+    # For master :
     password_less(command='ssh-keygen', machine=master_ip, username=default_user, password=default_pass)
     password_less(command='ssh-copy-id', machine=master_ip, username=default_user, password=default_pass)
     # For nodes:
