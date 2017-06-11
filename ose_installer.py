@@ -95,11 +95,11 @@ def password_less(command, machine, username, password, nodes_ips=None):
         command = 'ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ""'
     elif command == 'ssh-copy-id':
         if not nodes_ips:
-            copy_id_to_local(hostname=machine, username=username, password=password)
-            sshcopy = SshCopy(user=username, host=machine, passwd=password, port=22)
+            cert_path = copy_id_to_local(hostname=machine, username=username, password=password)
+            sshcopy = SshCopy(user=username, host=machine, passwd=password, port=22, cert_path=cert_path)
             s = paramiko.SSHClient()
             s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            s.connect(ip, port, username, password)
+            s.connect(machine, port, username, password)
             sshcopy.send()
             return
         else:
@@ -140,29 +140,31 @@ def run_command(command, hostname, username, password):
 
 
 def copy_id_to_local(hostname, username, password):
-    localpath = os.getenv('HOME') + '/id_rsa.pub'
+    master_cert_path = os.getcwd() + '/master_cert'
+    if not os.path.isdir(master_cert_path):
+        os.mkdir(master_cert_path, 0755)
+    localpath = master_cert_path + '/id_rsa.pub'
     remotepath = '/root/.ssh/id_rsa.pub'
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(hostname, username=username, password=password)
     sftp = ssh.open_sftp()
-    sftp.put(remotepath, localpath)
+    sftp.get(remotepath=remotepath, localpath=localpath)
     sftp.close()
     ssh.close()
-    # command = 'scp root@' + hostname + ':.ssh/id_rsa.pub ' + os.getenv('HOME')
-    # call(command)
+    return localpath
 
 
 class SshCopy:
-    def __init__(self, user, host, passwd, port):
-        self.pub_key = os.getenv('HOME') + '/.ssh/id_rsa.pub'
+    def __init__(self, user, host, passwd, port, cert_path):
+        self.pub_key = cert_path
         self.user = user
         self.host = host
         self.passwd = passwd
         self.port = port
 
     def send(self):
-        str_ssh = '/usr/bin/ssh-copy-id -i %s %s@%s -p %s' % (self.pub_key, self.user, self.host, self.port)
+        str_ssh = '/usr/bin/ssh-copy-id -f -i %s %s@%s -p %s' % (self.pub_key, self.user, self.host, self.port)
         child = pexpect.spawn(str_ssh)
         try:
             index = child.expect(['continue connecting \(yes/no\)', '\'s password:', pexpect.EOF], timeout=20)
@@ -172,6 +174,7 @@ class SshCopy:
                 print child.after, child.before
             if index == 1:
                 child.sendline(self.passwd)
+                # child.expect('root@10.35.70.86\'s password:')
                 child.expect('password:')
                 child.sendline(self.passwd)
                 print child.after, child.before
