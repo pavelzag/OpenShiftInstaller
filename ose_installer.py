@@ -1,7 +1,6 @@
 import paramiko
 import os, pexpect
 from configuration import *
-from subprocess import call
 
 
 port = 22
@@ -174,7 +173,6 @@ class SshCopy:
                 print child.after, child.before
             if index == 1:
                 child.sendline(self.passwd)
-                # child.expect('root@10.35.70.86\'s password:')
                 child.expect('password:')
                 child.sendline(self.passwd)
                 print child.after, child.before
